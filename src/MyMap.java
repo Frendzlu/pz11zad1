@@ -1,9 +1,8 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MyMap<K, V> implements Map<K, V> {
-    ArrayList<K> keys;
-    ArrayList<V> values;
+    ArrayList<K> keys = new ArrayList<>();
+    ArrayList<V> values = new ArrayList<>();
     /**
      * Returns the number of key-value mappings in this map.  If the
      * map contains more than {@code Integer.MAX_VALUE} elements, returns

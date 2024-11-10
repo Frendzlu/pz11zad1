@@ -7,6 +7,7 @@ public class Room {
     private double roomPrice;
     private final int floor;
     private final int roomNumber;
+    private final int capacity;
     private final ArrayList<Guest> guests;
     private Date checkInDate;
     private Date checkOutDate;
@@ -47,7 +48,7 @@ public class Room {
         this.roomPrice = roomPrice;
     }
 
-    public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, ArrayList<Guest> guests, Date checkInDate, Date checkOutDate) {
+    public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, int capacity, ArrayList<Guest> guests, Date checkInDate, Date checkOutDate) {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
         this.roomPrice = roomPrice;
@@ -56,6 +57,22 @@ public class Room {
         this.guests = guests;
         this.checkInDate = checkInDate;
         this.checkOutDate = checkOutDate;
+        this.capacity = capacity;
+    }
+
+    public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, int capacity) {
+        this.roomName = roomName;
+        this.roomDescription = roomDescription;
+        if (this.roomDescription.isEmpty()) {
+            this.roomDescription = "No description was provided";
+        }
+        this.roomPrice = roomPrice;
+        this.floor = floor;
+        this.roomNumber = roomNumber;
+        this.guests = new ArrayList<>();
+        this.checkInDate = null;
+        this.checkOutDate = null;
+        this.capacity = capacity;
     }
 
     public Room(String roomName, int roomNumber, int floor) {
@@ -64,15 +81,26 @@ public class Room {
         this.floor = floor;
         this.guests = new ArrayList<>();
         this.roomPrice = 0.0;
-        this.roomDescription = "This room has no description";
+        this.roomDescription = "No description was provided";
+        this.checkInDate = null;
+        this.checkOutDate = null;
+        this.capacity = 0;
     }
 
     public void removeGuests() {
         this.guests.clear();
     }
 
-    public void addGuest(Guest guest) {
-        this.guests.add(guest);
+    public boolean addGuest(Guest guest) {
+        if (guests.size() < this.capacity) {
+            guests.add(guest);
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isValidRoomName(int floor, String roomName) {
+        return roomName.startsWith(String.valueOf(floor));
     }
 
     public ArrayList<Guest> getGuests() {
