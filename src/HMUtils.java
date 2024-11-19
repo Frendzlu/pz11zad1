@@ -3,14 +3,33 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class HMUtils {
-    public String[] listFilesForFolder(final File folder) {
-        ArrayList<String> files = new ArrayList<>();
+    public static ArrayList<File> listFilesForFolder(final File folder) {
+        ArrayList<File> files = new ArrayList<>();
         for (final File fileEntry : Objects.requireNonNull(folder.listFiles())) {
             if (fileEntry.isDirectory()) {
                 continue;
             }
-            files.add(fileEntry.getName());
+            files.add(fileEntry);
         }
-        return files.stream().map(name -> name).toArray(String[]::new);
+        return files;
+    }
+    public static void displayRoomInfo(Room room, ConsoleWrapper csl, boolean displayPrice, boolean displayGuests) {
+        csl.print(1, "Room %s", room.getRoomName());
+        if (displayPrice) {
+            csl.print(2, "Price: %f.02", room.getRoomPrice());
+        }
+        csl.print(2, "%s", room.getRoomDescription());
+        if (!displayGuests) {
+            return;
+        }
+        if (!room.getGuests().isEmpty()) {
+            csl.print(2, "Check in date:  %s", room.getCheckInDate());
+            csl.print(2, "Check out date: %s", room.getCheckOutDate());
+        } else {
+            csl.print(2, "The room is free");
+        }
+        for (Guest guest : room.getGuests()) {
+            csl.print(2, "%s", guest.toString());
+        }
     }
 }

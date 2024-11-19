@@ -1,8 +1,18 @@
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
+import java.nio.file.Files;
 
 public class Main {
     public static void main(String[] args) {
+
+        try {
+            Files.createDirectories(Paths.get("./hotels"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         ConsoleWrapper cw = new ConsoleWrapper();
         Hotel hotel = new Hotel();
         cw.print("Welcome to HotelManager version 0.2");

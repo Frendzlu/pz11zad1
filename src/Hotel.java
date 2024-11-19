@@ -1,6 +1,11 @@
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
+
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Hotel {
     public String hotelName;
@@ -18,12 +23,27 @@ public class Hotel {
         this.rooms = new MyMap<>();
     }
 
-    public void loadFromFile() {
-
+    public void loadFromFile(File file) {
+        try (FileReader fr = new FileReader(file)) {
+            CSVReader cr = new CSVReader(fr);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public void saveToFile() {
-
+    public void saveToFile(File file) {
+        try (FileWriter fw = new FileWriter(file)) {
+            CSVWriter cw = new CSVWriter(fw);
+            String[] headers = { "Name", "Floor", "Number", "Price", "Capacity", "Description", "Checkin", "Checkout", "Guestlist"};
+            List<String[]> data = new ArrayList<String[]>();
+            data.add(headers);
+            for (Room room : rooms.values()) {
+                String[] row = room.toCSVFileRecord();
+                data.add(row);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void setRooms(int floors, int roomsPerFloor) {
@@ -35,6 +55,10 @@ public class Hotel {
                 rooms.put(roomName, room);
             }
         }
+    }
+
+    public Room getRoom(String roomName) {
+        return rooms.get(roomName);
     }
 
     public void addRoom(Room room) {

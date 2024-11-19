@@ -48,6 +48,18 @@ public class Room {
         this.roomPrice = roomPrice;
     }
 
+    public int getFloor() {
+        return floor;
+    }
+
+    public int getRoomNumber() {
+        return roomNumber;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
     public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, int capacity, ArrayList<Guest> guests, Date checkInDate, Date checkOutDate) {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
@@ -105,5 +117,18 @@ public class Room {
 
     public ArrayList<Guest> getGuests() {
         return guests;
+    }
+
+    public String[] toCSVFileRecord() {
+        return new String[]{
+            this.roomName,
+            String.valueOf(this.floor),
+            String.valueOf(this.roomNumber),
+            String.valueOf(this.roomPrice),
+            String.valueOf(this.capacity),
+            String.valueOf(this.checkInDate),
+            String.valueOf(this.checkOutDate),
+            String.valueOf(this.getGuests())
+        };
     }
 }
