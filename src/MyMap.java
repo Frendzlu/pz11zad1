@@ -211,8 +211,8 @@ public class MyMap<K, V> implements Map<K, V> {
      */
     @Override
     public void clear() {
-        for (K key : keys) {
-            remove(key);
+        while (!keys.isEmpty()) {
+            remove(keys.removeFirst());
         }
     }
 

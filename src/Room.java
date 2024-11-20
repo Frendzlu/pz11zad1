@@ -123,10 +123,20 @@ public class Room {
         for (Guest guest : guests) {
             if (gueststring.isEmpty()) {
                 gueststring = new StringBuilder(guest.name + "," + guest.surname);
+            } else {
+                gueststring.append(";").append(guest.name).append(",").append(guest.surname);
             }
-            gueststring.append(";").append(guest.name).append(",").append(guest.surname);
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateformat);
+        String cin = "null";
+        if (this.checkInDate != null) {
+            cin = this.checkInDate.format(formatter);
+        }
+        String cout = "null";
+        if (this.checkOutDate != null) {
+            cout = this.checkOutDate.format(formatter);
+        }
+
         return new String[]{
             this.roomName,
             String.valueOf(this.floor),
@@ -134,8 +144,8 @@ public class Room {
             String.valueOf(this.roomPrice),
             String.valueOf(this.capacity),
             this.roomDescription,
-            this.checkInDate.format(formatter),
-            this.checkOutDate.format(formatter),
+            cin,
+            cout,
             gueststring.toString()
         };
     }

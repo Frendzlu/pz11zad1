@@ -37,7 +37,7 @@ public class Hotel {
                     double price = Double.parseDouble(values[3]);
                     int capacity = Integer.parseInt(values[4]);
                     String description = values[5];
-                    DateTimeFormatter fIn = DateTimeFormatter.ofPattern("dd/MM/uuuu", Locale.UK);
+                    DateTimeFormatter fIn = DateTimeFormatter.ofPattern("uuuu-MM-dd", Locale.UK);
                     LocalDate checkinDate = null;
                     if (!Objects.equals(values[6], "null")) {
                         checkinDate = LocalDate.parse(values[6], fIn);

@@ -1,4 +1,6 @@
 import java.io.Console;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -64,19 +66,10 @@ public class ConsoleWrapper {
     }
 
     public LocalDate getDate(int indent, String message, String dateformat) {
-        return this.getDate(indent, message + "%s", dateformat, "");
-    }
-
-    public LocalDate getDate(String message, String dateformat) {
-        return this.getDate(0, message, dateformat);
-    }
-
-    public LocalDate getDate(int indent, String format, String dateformat, Object... args) {
         boolean isRightString = false;
         LocalDate ld = LocalDate.now(ZoneId.systemDefault());
         while (!isRightString) {
-            String dateAsString = this.getString(1, "%s (%s, leave empty for current date): ", format, args, dateformat);
-            csl.printf("\t\t\t\t" + format + "\n");
+            String dateAsString = this.getString(1, "%s (%s, leave empty for current date): ", message, dateformat);
             DateTimeFormatter fIn = DateTimeFormatter.ofPattern( dateformat, Locale.UK );
             ld = LocalDate.parse(LocalDate.now(ZoneId.systemDefault()).format(fIn), fIn);
             if (Objects.equals(dateAsString, "")) {
@@ -90,5 +83,9 @@ public class ConsoleWrapper {
             isRightString = true;
         }
         return ld;
+    }
+
+    public LocalDate getDate(String message, String dateformat) {
+        return this.getDate(0, message, dateformat);
     }
 }

@@ -34,7 +34,7 @@ public class CommandHandler {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        hotel.saveToFile(new File("./hotels/"+hotel.hotelName+".csv"), "dd/MM/uuuu");
+        hotel.saveToFile(new File("./hotels/"+hotel.hotelName+".csv"), "uuuu-MM-dd");
     }
 
     @Description("Loads hotel data from selected csv file")
@@ -109,7 +109,7 @@ public class CommandHandler {
             String surname = csl.getString(2, "Surname of guest #%d: ", i+1);
             room.addGuest(new Guest(name, surname));
         }
-        LocalDate dateOfCheckin = csl.getDate(1, "Date of checkin", "dd/MM/uuuu");
+        LocalDate dateOfCheckin = csl.getDate(1, "Date of checkin", "uuuu-MM-dd");
         room.setCheckInDate(dateOfCheckin);
         int daysOfStay = csl.getInt(1, "Days of stay: ");
         room.setCheckOutDate(dateOfCheckin.plusDays(daysOfStay));

@@ -1,12 +1,17 @@
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.nio.file.Files;
+
+import static java.lang.System.out;
 
 public class Main {
     public static void main(String[] args) {
         System.setProperty("file.encoding", "UTF-8");
+        System.setProperty("native.encoding", "UTF-8");
         try {
             Files.createDirectories(Paths.get("./hotels"));
         } catch (IOException e) {
