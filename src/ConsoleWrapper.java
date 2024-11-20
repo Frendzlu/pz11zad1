@@ -1,4 +1,10 @@
 import java.io.Console;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.util.Locale;
+import java.util.Objects;
 
 public class ConsoleWrapper {
     public Console csl;
@@ -55,5 +61,34 @@ public class ConsoleWrapper {
 
     public void print(String message) {
         csl.printf(message + "\n");
+    }
+
+    public LocalDate getDate(int indent, String message, String dateformat) {
+        return this.getDate(indent, message + "%s", dateformat, "");
+    }
+
+    public LocalDate getDate(String message, String dateformat) {
+        return this.getDate(0, message, dateformat);
+    }
+
+    public LocalDate getDate(int indent, String format, String dateformat, Object... args) {
+        boolean isRightString = false;
+        LocalDate ld = LocalDate.now(ZoneId.systemDefault());
+        while (!isRightString) {
+            String dateAsString = this.getString(1, "%s (%s, leave empty for current date): ", format, args, dateformat);
+            csl.printf("\t\t\t\t" + format + "\n");
+            DateTimeFormatter fIn = DateTimeFormatter.ofPattern( dateformat, Locale.UK );
+            ld = LocalDate.parse(LocalDate.now(ZoneId.systemDefault()).format(fIn), fIn);
+            if (Objects.equals(dateAsString, "")) {
+                return ld;
+            }
+            try {
+                ld = LocalDate.parse(dateAsString, fIn);
+            } catch (DateTimeParseException e) {
+                csl.printf("\t".repeat(indent) + "Please enter a correct, correctly formatted date.\n");
+            }
+            isRightString = true;
+        }
+        return ld;
     }
 }

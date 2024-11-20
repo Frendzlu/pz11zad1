@@ -1,9 +1,15 @@
 import jdk.jfr.Description;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 public class CommandHandler {
@@ -22,13 +28,23 @@ public class CommandHandler {
 
     @Description("Saves hotel data to selected csv file")
     public static void save(ConsoleWrapper csl, Hotel hotel) {
-        csl.print("inside save");
+        File file = new File("./hotels/"+hotel.hotelName+".csv");
+        try {
+            boolean _ = file.createNewFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        hotel.saveToFile(new File("./hotels/"+hotel.hotelName+".csv"), "dd/MM/uuuu");
     }
 
     @Description("Loads hotel data from selected csv file")
     public static void load(ConsoleWrapper csl, Hotel hotel) {
         ArrayList<File> existingFiles = HMUtils.listFilesForFolder(new File("./hotels"));
         ArrayList<String> filenames = new ArrayList<>();
+        if (existingFiles.size() == 1) {
+            hotel.loadFromFileWithName(existingFiles.getFirst().getName().replace(".csv", ""));
+            return;
+        }
         csl.print(1, "Available files:");
         for (File file : existingFiles) {
             filenames.add(file.getName());
@@ -42,7 +58,7 @@ public class CommandHandler {
                 isNotValid = false;
             }
         }
-        hotel.loadFromFile(new File("./%s".formatted(chosenFilename)));
+        hotel.loadFromFileWithName(chosenFilename);
     }
 
     @Description("Shows hotel room prices")
@@ -93,24 +109,44 @@ public class CommandHandler {
             String surname = csl.getString(2, "Surname of guest #%d: ", i+1);
             room.addGuest(new Guest(name, surname));
         }
-        String dateOfCheckin = csl.getString(2, "Date of checkin (yyyy-mm-dd, leave empty for now): ");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-M-dd");;
-        Date date = null;
-        try {
-            date = formatter.parse(dateOfCheckin);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
-        if (Objects.equals(dateOfCheckin, "")) {
-            room.setCheckInDate(new Date());
-        } else {
-            room.setCheckInDate(date);
-        }
+        LocalDate dateOfCheckin = csl.getDate(1, "Date of checkin", "dd/MM/uuuu");
+        room.setCheckInDate(dateOfCheckin);
+        int daysOfStay = csl.getInt(1, "Days of stay: ");
+        room.setCheckOutDate(dateOfCheckin.plusDays(daysOfStay));
     }
 
     @Description("Checks out a guest")
     public static void checkout(ConsoleWrapper csl, Hotel hotel) {
-        csl.print("inside checkout");
+        if (hotel.getRooms() == null) {
+            csl.print(1, "Hotel has no rooms");
+            return;
+        }
+        String roomName = csl.getString(1, "Choose a room: ");
+        Room room = hotel.getRoom(roomName);
+        if (room == null) {
+            csl.print(1, "Room not found");
+            return;
+        }
+        if (room.getGuests().isEmpty()) {
+            csl.print(1, "Room has no guests");
+            return;
+        }
+        String guestnames = String.join(",", room.getGuests().stream().map(Guest::toString).toArray(String[]::new));
+        long totalDays = ChronoUnit.DAYS.between(room.getCheckInDate(), LocalDate.now(ZoneId.systemDefault()));
+        boolean shouldCheckout = true;
+        boolean isNotValid = true;
+        csl.print(1, "Amount due: %d", totalDays);
+        while (isNotValid) {
+            isNotValid = false;
+            String y = csl.getString(1, "Are you sure about checking out %s? (Y/n): ", guestnames).toLowerCase();
+            if (y.equals("n")) {
+                return;
+            } else if (!y.equals("y")) {
+                isNotValid = true;
+            }
+        }
+        room.removeGuests();
+        csl.print(1, "Checkout of %s successful", guestnames);
     }
 
     @Description("Returns the information about rooms and their guests")
@@ -121,7 +157,6 @@ public class CommandHandler {
         }
         for (Room room : hotel.getRooms()) {
             HMUtils.displayRoomInfo(room, csl, false, true);
-            csl.print(3, "%s", Arrays.toString(room.toCSVFileRecord()));
         }
     }
     @Description("Creates a new hotel, either room-by-room, or automatically")

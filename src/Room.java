@@ -1,5 +1,6 @@
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 
 public class Room {
     private final String roomName;
@@ -9,22 +10,22 @@ public class Room {
     private final int roomNumber;
     private final int capacity;
     private final ArrayList<Guest> guests;
-    private Date checkInDate;
-    private Date checkOutDate;
+    private LocalDate checkInDate;
+    private LocalDate checkOutDate;
 
-    public Date getCheckInDate() {
+    public LocalDate getCheckInDate() {
         return checkInDate;
     }
 
-    public void setCheckInDate(Date checkInDate) {
+    public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
     }
 
-    public Date getCheckOutDate() {
+    public LocalDate getCheckOutDate() {
         return checkOutDate;
     }
 
-    public void setCheckOutDate(Date checkOutDate) {
+    public void setCheckOutDate(LocalDate checkOutDate) {
         this.checkOutDate = checkOutDate;
     }
 
@@ -60,7 +61,7 @@ public class Room {
         return capacity;
     }
 
-    public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, int capacity, ArrayList<Guest> guests, Date checkInDate, Date checkOutDate) {
+    public Room(String roomName, String roomDescription, double roomPrice, int floor, int roomNumber, int capacity, ArrayList<Guest> guests, LocalDate checkInDate, LocalDate checkOutDate) {
         this.roomName = roomName;
         this.roomDescription = roomDescription;
         this.roomPrice = roomPrice;
@@ -103,12 +104,10 @@ public class Room {
         this.guests.clear();
     }
 
-    public boolean addGuest(Guest guest) {
+    public void addGuest(Guest guest) {
         if (guests.size() < this.capacity) {
             guests.add(guest);
-            return true;
         }
-        return false;
     }
 
     public static boolean isValidRoomName(int floor, String roomName) {
@@ -119,16 +118,25 @@ public class Room {
         return guests;
     }
 
-    public String[] toCSVFileRecord() {
+    public String[] toCSVFileRecord(String dateformat) {
+        StringBuilder gueststring = new StringBuilder();
+        for (Guest guest : guests) {
+            if (gueststring.isEmpty()) {
+                gueststring = new StringBuilder(guest.name + "," + guest.surname);
+            }
+            gueststring.append(";").append(guest.name).append(",").append(guest.surname);
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(dateformat);
         return new String[]{
             this.roomName,
             String.valueOf(this.floor),
             String.valueOf(this.roomNumber),
             String.valueOf(this.roomPrice),
             String.valueOf(this.capacity),
-            String.valueOf(this.checkInDate),
-            String.valueOf(this.checkOutDate),
-            String.valueOf(this.getGuests())
+            this.roomDescription,
+            this.checkInDate.format(formatter),
+            this.checkOutDate.format(formatter),
+            gueststring.toString()
         };
     }
 }

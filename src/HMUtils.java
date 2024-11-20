@@ -14,9 +14,12 @@ public class HMUtils {
         return files;
     }
     public static void displayRoomInfo(Room room, ConsoleWrapper csl, boolean displayPrice, boolean displayGuests) {
+        if (room == null) {
+            return;
+        }
         csl.print(1, "Room %s", room.getRoomName());
         if (displayPrice) {
-            csl.print(2, "Price: %f.02", room.getRoomPrice());
+            csl.print(2, "Price: %.02f", room.getRoomPrice());
         }
         csl.print(2, "%s", room.getRoomDescription());
         if (!displayGuests) {
